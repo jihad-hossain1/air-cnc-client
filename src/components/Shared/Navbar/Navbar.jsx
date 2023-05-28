@@ -2,6 +2,7 @@ import React from "react";
 import Container from "../Container/Container";
 import Logo from "./Logo";
 import Search from "../../Search/Search";
+import MenuDropdown from "../../MenuDropdown/MenuDropdown";
 
 const Navbar = () => {
   return (
@@ -12,7 +13,8 @@ const Navbar = () => {
             <Logo></Logo>
             {/* <div>search</div> */}
             <Search></Search>
-            <div>Menu</div>
+            {/* <div>Menu</div> */}
+            <MenuDropdown></MenuDropdown>
           </div>
         </Container>
       </div>
