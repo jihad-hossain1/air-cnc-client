@@ -3,10 +3,10 @@ import React from "react";
 import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 
 const CategoryBox = ({ label, icon: Icon }) => {
-  //   const [params, setParams] = useSearchParams();
-  //   const value = params.get("category");
+  const [params, setParams] = useSearchParams();
+  const value = params.get("category");
   const navigate = useNavigate();
-  //   console.log(value);
+  console.log(value);
 
   const handleClickByCategory = () => {
     let currentQuary = {};
