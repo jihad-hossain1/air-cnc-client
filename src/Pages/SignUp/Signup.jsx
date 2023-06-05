@@ -6,78 +6,82 @@ import { AuthContext } from "../../providers/AuthProvider";
 import { toast } from "react-hot-toast";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaSpinner } from "react-icons/fa";
+import { saveUser } from "../../api/auth";
 const Signup = () => {
-      const navigate = useNavigate();
-        const location = useLocation();
-        const from = location.state?.from?.pathname || "/";
+  const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/";
   const {
     loading,
     setLoading,
     createUser,
     signInWithGoogle,
     updateUserProfile,
-    } = useContext(AuthContext);
+  } = useContext(AuthContext);
 
-    const handleCreateAccount = (e) => {
+  const handleCreateAccount = (e) => {
     e.preventDefault();
     const form = e.target;
     const email = form.email.value;
     const password = form.password.value;
     const name = form.name.value;
-    
-    // upload picture
-    const image = form.image.files[0]
-    const formData = new FormData()
-    formData.append('image', image)
-    
-        const url = `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_IMGBB}`;
-        
-        fetch(url, {
-            method: 'POST',
-            body: formData
-        }).then(res => res.json()).then(data => {
-            console.log(data.data.display_url);
-            const imgUrl = data.data.display_url;
 
-            createUser(email, password)
+    // upload picture
+    const image = form.image.files[0];
+    const formData = new FormData();
+    formData.append("image", image);
+
+    const url = `https://api.imgbb.com/1/upload?key=${
+      import.meta.env.VITE_IMGBB
+    }`;
+
+    fetch(url, {
+      method: "POST",
+      body: formData,
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data.data.display_url);
+        const imgUrl = data.data.display_url;
+
+        createUser(email, password)
+          .then((result) => {
+            updateUserProfile(name, imgUrl)
               .then(() => {
-                updateUserProfile(name, imgUrl)
-                    .then((result) => {
-                      navigate(from, { replace: true });
-                        // console.log("profile upload", result.user);
-                         toast.success("Successfully Account Created");
-                         setLoading(false);
-                  })
-                  .catch((error) => {
-                    setLoading(false);
-                    console.log(error.message);
-                    toast.error(`${error}`);
-                  });
+                // console.log("profile upload", result.user);
+                toast.success("Successfully Account Created");
+                saveUser(result.user);
+                navigate(from, { replace: true });
+                // setLoading(false);
               })
               .catch((error) => {
                 setLoading(false);
                 console.log(error.message);
                 toast.error(`${error}`);
               });
-        })
-        console.log(url);
-        
-        
-     
-    };
-    const handleGoogleSignIn = () => {
-        console.log("clck");
-        signInWithGoogle()
-            .then((result) => {
-                console.log(result.user);
-                navigate(from, { replace: true });
-            })
-            .catch((error) => {
-                setLoading(false);
-                console.log(error.message);
-                toast.error(`${error}`);
-            });
-    }
+          })
+          .catch((error) => {
+            setLoading(false);
+            console.log(error.message);
+            toast.error(`${error}`);
+          });
+      });
+    console.log(url);
+  };
+  const handleGoogleSignIn = () => {
+    console.log("clck");
+    signInWithGoogle()
+      .then((result) => {
+        console.log(result.user);
+        saveUser(result.user);
+        navigate(from, { replace: true });
+      })
+      .catch((error) => {
+        setLoading(false);
+        console.log(error.message);
+        toast.error(`${error}`);
+      });
+  };
   return (
     <>
       <div className="flex justify-center items-center min-h-screen">

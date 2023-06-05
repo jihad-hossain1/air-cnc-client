@@ -5,14 +5,15 @@ import { FcGoogle } from "react-icons/fc";
 import { FaSpinner } from "react-icons/fa";
 import { AuthContext } from "../../providers/AuthProvider";
 import toast, { Toaster } from "react-hot-toast";
+import { saveUser } from "../../api/auth";
 
 const Login = () => {
   const navigate = useNavigate();
   const { loading, setLoading, signIn, signInWithGoogle, resetPassword } =
     useContext(AuthContext);
-    const emailRef = useRef();
-    const location = useLocation()
-    const from = location.state?.from?.pathname || '/'
+  const emailRef = useRef();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/";
 
   const handleSignIn = (e) => {
     e.preventDefault();
@@ -22,8 +23,9 @@ const Login = () => {
 
     signIn(email, password)
       .then((result) => {
+        saveUser(result.user);
         console.log(result.user);
-        navigate(from, {replace: true});
+        navigate(from, { replace: true });
       })
       .catch((error) => {
         setLoading(false);
@@ -36,6 +38,7 @@ const Login = () => {
     console.log("clck");
     signInWithGoogle()
       .then((result) => {
+        saveUser(result.user);
         console.log(result.user);
         navigate(from, { replace: true });
       })
@@ -46,17 +49,19 @@ const Login = () => {
       });
   };
 
-    const handleResetPassword = () => {
-        const email = emailRef.current.value
-        // return console.log(email);
-        resetPassword(email).then(() => {
-            toast.success('please check your mail for reset Link')
-            setLoading(false)
-        }).catch(error => {
-            setLoading(false);
-            // console.log(error.message);
-            toast.error(`${error ? 'User not Valid' : ''}`);
-        })
+  const handleResetPassword = () => {
+    const email = emailRef.current.value;
+    // return console.log(email);
+    resetPassword(email)
+      .then(() => {
+        toast.success("please check your mail for reset Link");
+        setLoading(false);
+      })
+      .catch((error) => {
+        setLoading(false);
+        // console.log(error.message);
+        toast.error(`${error ? "User not Valid" : ""}`);
+      });
   };
   return (
     <>
